@@ -2,7 +2,6 @@ import tkinter.messagebox as msgbox
 from tkinter import *
 import os
 import cv2
-from matplotlib.pyplot import text
 import mediapipe as mp
 mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
@@ -14,7 +13,7 @@ def faceDection():
   with mp_face_detection.FaceDetection(
       model_selection=0, min_detection_confidence=0.7) as face_detection:
     while cap.isOpened():
-      
+      breaker = False
       success, image = cap.read()
       if not success:
         print("Ignoring empty camera frame.")
@@ -34,11 +33,13 @@ def faceDection():
       if results.detections:
         for detection in results.detections:
           mp_drawing.draw_detection(image, detection)
-          if cnt % 50 == 0:
+          if cnt % 50 == 0 and cnt != 0 :
             cv2.imwrite('Face\{0}\{1}.jpg'.format(entry1.get(),cnt),image2)
+            if cnt >250 :
+                  breaker = True
       # Flip the image horizontally for a selfie-view display.
       cv2.imshow('face extraction for image training', cv2.flip(image, 1))
-      if cv2.waitKey(5) & 0xFF == 113:
+      if cv2.waitKey(5) & 0xFF == 113 or breaker == True:
         break
       cnt += 1
   cap.release()
